@@ -13,6 +13,15 @@ from rest_framework import permissions
 
 from rest_framework import viewsets
 
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response({
+        'users': reverse('user-list', request=request, format=format),
+        'snippets': reverse('snippet-list', request=request, format=format)
+        ### how to make it works when there are details 
+        # 'users_detail': reverse('user-detail', request=request, format=format),
+        # 'snippets_detail': reverse('snippet-detail', request=request, format=format)
+    })
 
 # class SnippetList(generics.ListCreateAPIView):
 #     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
