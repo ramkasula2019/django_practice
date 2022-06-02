@@ -16,6 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+
+# https://stackoverflow.com/questions/46141831/django-administration-to-the-custom-title-in-project-templates
+admin.site.site_header = 'Polls Administration'
+admin.site.site_title = 'Polls Admisnistration'
+
 urlpatterns = [
     path('polls/', include('polls.urls')),
     path('admin/', admin.site.urls),
