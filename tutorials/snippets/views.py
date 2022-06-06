@@ -1,3 +1,4 @@
+import re
 from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer, UserSerializer
 from rest_framework import generics
@@ -10,9 +11,9 @@ from rest_framework.reverse import reverse
 from rest_framework import renderers
 from rest_framework.decorators import action
 from rest_framework import permissions
-
+import jsons
 from rest_framework import viewsets
-
+from rest_framework import views
 
 # class SnippetList(generics.ListCreateAPIView):
 #     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
@@ -73,8 +74,35 @@ class SnippetViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
-        snippet = self.get_object()
+        snippet = self.get_object()  
         return Response(snippet.highlighted)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+class GuideRequestViewSet(views.APIView):
+    """
+    {"cockpits":[{"id":0,"cms_provider":{"values":["1215153929"],"inverted":false,"and":false,"count":1},"year":154,"grainsMapped":{"main":["cms_provider"]},"grains":["cms_provider"]},{"id":1,"peer_type":{"values":["45","164","244","251","312"],"inverted":true,"and":false,"count":5},"year":154,"grainsMapped":{"main":["peer_type"]},"grains":["peer_type"]}],"controls":{"volume_actual":"1","value_labels":"1","color_by":"0"},"additional":{}}
+    """
+    
+    def post(self, request):                                 
+        
+        data = {'data':request.data, 
+                'method':request.method, 
+                'content_type':request.content_type,
+                'auth':request.auth,
+                'stream':request.stream,
+                'username':request.user.username
+                }
+        return Response(data )
+
+    def get(self, request):
+        # for this to work need to pass query param in url itself. it is like get method
+        # http://127.0.0.1:8001/hi/?cockpits=test  
+        # https://stackoverflow.com/questions/15770488/return-the-current-user-with-django-rest-framework (to print request.user)      
+        param = self.request.query_params.get('cockpits','no_request_param')
+        user = request.user
+        data = {'param':param, 'username': user.username,}  
+ 
+        return Response(data)
+
