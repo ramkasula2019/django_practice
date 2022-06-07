@@ -1,4 +1,5 @@
 import re
+from urllib import response
 from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer, UserSerializer
 from rest_framework import generics
@@ -11,7 +12,8 @@ from rest_framework.reverse import reverse
 from rest_framework import renderers
 from rest_framework.decorators import action
 from rest_framework import permissions
-import jsons
+import json
+from json import JSONEncoder
 from rest_framework import viewsets
 from rest_framework import views
 
@@ -86,13 +88,19 @@ class GuideRequestViewSet(views.APIView):
     """
     
     def post(self, request):                                 
+        ## find response attribute
+        response=Response(request.data)
         
         data = {'data':request.data, 
                 'method':request.method, 
                 'content_type':request.content_type,
                 'auth':request.auth,
                 'stream':request.stream,
-                'username':request.user.username
+                'username':request.user.username,
+                'session':request.session,
+                'meta':request.META.keys(),
+                'res_status_code':response.status_code,
+                'res_data':response.data
                 }
         return Response(data )
 
@@ -106,3 +114,6 @@ class GuideRequestViewSet(views.APIView):
  
         return Response(data)
 
+class EmployeeEncoder(JSONEncoder):
+        def default(self, o):
+            return o.__dict__
