@@ -1,8 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from snippets import views
-
-
+from django.contrib.auth.models import User
+from snippets.serializers import SnippetSerializer, UserSerializer
 #https://stackoverflow.com/questions/71564307/converting-to-using-url-router-is-causing-a-improperlyconfigured-exception
 # there was basename="snippets" in tutorial that is why we are getting issue, it should be singular
 # Create a router and register our viewsets with it.
@@ -19,4 +19,9 @@ urlpatterns = [
     path('hello_world/',views.hello_world),
     path('user_list_fn/', views.list_user_fn_based),
     path('test_schema_view/', views.test_schema_view),
+    # both users_test commented and uncomment are fine url
+    # path('users_test/', views.UserList.as_view(queryset=User.objects.all(), serializer_class=UserSerializer), name='user-list')
+    path('users_test/', views.UserList.as_view()),
+    path('users_list_test/', views.UserListTest.as_view()),
+    path('users_list_override/', views.UserListOverrideQueryset.as_view())
 ]

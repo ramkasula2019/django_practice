@@ -158,8 +158,66 @@ class CustomAutoSchema(AutoSchema):
     def get_link(self, path, method, base_url):
         # override view introspection here...
         pass
-    
+
 @api_view(['GET'])
 @schema(CustomAutoSchema())
 def test_schema_view(request):
     return Response({"message": "Hello for today! See you tomorrow!"})
+
+
+## Generic
+# Note we can change UserList as any class name.
+class UserList(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def list(self, request):
+        # Note the use of `get_queryset()` instead of `self.queryset`
+        queryset = self.get_queryset() # why get_query_set() method because  it Defaults to returning the queryset specified by the queryset attribute.
+
+
+        #need to add context while instantiting
+        #https://stackoverflow.com/questions/57397471/how-to-fix-this-error-hyperlinkedidentityfield-requires-the-request-in-the-se
+        serializer = UserSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+class UserListTest(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def list(self, request):
+        # Note the use of `get_queryset()` instead of `self.queryset`
+        queryset =self.queryset
+        # this class is to test difference between self.queryset or self.get_queryset() method. some caching issue 
+        #so we used .all()
+        queryset = self.queryset.all()
+
+
+        #need to add context while instantiting
+        #https://stackoverflow.com/questions/57397471/how-to-fix-this-error-hyperlinkedidentityfield-requires-the-request-in-the-se
+        serializer = UserSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+
+class UserListOverrideQueryset(generics.ListCreateAPIView):
+    # queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def get_queryset(self):
+        user = self.request.user
+        return User.objects.filter(username=user)
+
+    def list(self, request):
+        # Note the use of `get_queryset()` instead of `self.queryset`
+        queryset = self.get_queryset() # note we override default to get only user with requiresing i80430 only
+
+
+        #need to add context while instantiting
+        #https://stackoverflow.com/questions/57397471/how-to-fix-this-error-hyperlinkedidentityfield-requires-the-request-in-the-se
+        serializer = UserSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
