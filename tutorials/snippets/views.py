@@ -6,7 +6,8 @@ from rest_framework import generics
 from django.contrib.auth.models import User
 from rest_framework import permissions
 from snippets.permissions import IsOwnerOrReadOnly
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, schema
+from rest_framework.schemas import AutoSchema
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import renderers
@@ -16,7 +17,7 @@ import json
 from json import JSONEncoder
 from rest_framework import viewsets
 from rest_framework import views
-
+from rest_framework import authentication, permissions
 # class SnippetList(generics.ListCreateAPIView):
 #     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
@@ -82,7 +83,7 @@ class SnippetViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-class GuideRequestViewSet(views.APIView):
+class GuideRequestView(views.APIView):
     """
     {"cockpits":[{"id":0,"cms_provider":{"values":["1215153929"],"inverted":false,"and":false,"count":1},"year":154,"grainsMapped":{"main":["cms_provider"]},"grains":["cms_provider"]},{"id":1,"peer_type":{"values":["45","164","244","251","312"],"inverted":true,"and":false,"count":5},"year":154,"grainsMapped":{"main":["peer_type"]},"grains":["peer_type"]}],"controls":{"volume_actual":"1","value_labels":"1","color_by":"0"},"additional":{}}
     """
@@ -117,3 +118,48 @@ class GuideRequestViewSet(views.APIView):
 class EmployeeEncoder(JSONEncoder):
         def default(self, o):
             return o.__dict__
+
+# django api guide - 3
+class ListUsers(views.APIView):
+    permission_classes= [permissions.IsAdminUser]
+    # authentication_classes=[authentication.TokenAuthentication]
+
+    """
+    View to list all users in the system.
+
+    * Requires token authentication.
+    * Only admin users are able to access this view. (by i80430)
+    """
+    def get(self, request, format = None):
+        """
+        Return a list of all users.
+        """
+        usernames = [user.username for user in User.objects.all()]
+        return Response(usernames)
+
+
+@api_view(['GET', 'POST'])
+def hello_world(request):
+    if request.method == 'POST':
+        return Response({"message": "Got some data!", "data": request.data})
+    return Response({"message": "Hello, world!"})
+
+
+# the following define decorator attribut and similar as above class
+@api_view(['GET', 'POST'])
+@permission_classes([permissions.IsAdminUser])
+def list_user_fn_based(request):
+    usernames = [user.username for user in User.objects.all()]
+    return Response(usernames)
+
+
+
+class CustomAutoSchema(AutoSchema):
+    def get_link(self, path, method, base_url):
+        # override view introspection here...
+        pass
+    
+@api_view(['GET'])
+@schema(CustomAutoSchema())
+def test_schema_view(request):
+    return Response({"message": "Hello for today! See you tomorrow!"})
