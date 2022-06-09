@@ -23,5 +23,11 @@ urlpatterns = [
     # path('users_test/', views.UserList.as_view(queryset=User.objects.all(), serializer_class=UserSerializer), name='user-list')
     path('users_test/', views.UserList.as_view()),
     path('users_list_test/', views.UserListTest.as_view()),
-    path('users_list_override/', views.UserListOverrideQueryset.as_view())
+    path('users_list_override/', views.UserListOverrideQueryset.as_view()),
+    path('only_users_list_test/', views.OnlyUserListTest.as_view()),
+
+    path('custom_mixing/<int:pk>/', views.RetrieveUserView.as_view()), # why this not working
+    path('custom_mixing/<int:pk>/<username>/', views.RetrieveUserView.as_view()),
+    # http://127.0.0.1:8001/custom_mixing/1/i80430/
+
 ]
