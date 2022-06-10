@@ -9,12 +9,7 @@ from snippets.serializers import SnippetSerializer, UserSerializer
 router = DefaultRouter()
 router.register(r'snippets', views.SnippetViewSet,basename="snippet")
 router.register(r'users', views.UserViewSet, basename="user")
-router.register(r'test_user_viewset_router', views.TestUserViewSet, basename='user')
-
 # router.register(r'test_requests', views.TestRequestViewSet, basename="test_requests")
-
-
-urlpatterns = router.urls
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
@@ -35,27 +30,4 @@ urlpatterns = [
     path('custom_mixing/<int:pk>/<username>/', views.RetrieveUserView.as_view()),
     # http://127.0.0.1:8001/custom_mixing/1/i80430/
 
-    ## viewsets url --typically we won't do this rather register in default router
-    path(
-        'test_user_viewset/<int:pk>/',
-        views.TestUserViewSet.as_view({'get': 'retrieve'}),
-        name='user-detail',
-    ),
-    path(
-        'test_user_viewset/',
-        views.TestUserViewSet.as_view({'get': 'list'}),
-        name='user-list',
-    ),
-# it seems little working but not  need to kept on top register part
-    path(
-        'user_set_password/<int:pk>/',
-        views.ExtraActionUserViewSet.as_view({'post': 'set_password'}),
-        name='user-list',
-    ),
-    path(
-        'recent_user/',
-        views.ExtraActionUserViewSet.as_view({'get': 'recent_users'}),
-        name='recent_user',
-    ),
-    
 ]

@@ -1,7 +1,7 @@
 import re
 from urllib import response
 from snippets.models import Snippet
-from snippets.serializers import SnippetSerializer, UserSerializer
+from snippets.serializers import SnippetSerializer, UserSerializer, PasswordSerializer
 from rest_framework import generics
 from django.contrib.auth.models import User
 from rest_framework import permissions
@@ -254,3 +254,58 @@ class RetrieveUserView(MultipleFieldLookupMixin, generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_fields = ['pk','username']
+
+
+
+
+######## VIEWSETS ###############
+class TestUserViewSet(viewsets.ViewSet):
+    """
+    A simple ViewSet for listing or retrieving users.
+    """
+    
+
+    
+    def list(self, request):
+        queryset = User.objects.all()
+        serializer = UserSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = User.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        serializer = UserSerializer(user,context={'request': request})
+        return Response(serializer.data)
+
+# mark extra action viewsets  
+
+########### not working
+class ExtraActionUserViewSet(viewsets.ModelViewSet):
+    """
+    A viewset that provides the standard actions
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    @action(detail=True, methods=['post'])
+    def set_password(self, request, pk=None):
+        user = self.get_object()
+        serializer = PasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            return Response({'status': 'password set'})
+        else:
+            return Response(serializer.errors)
+
+    @action(detail=False)
+    def recent_users(self, request):
+        recent_users = User.objects.all().filter(username='i80430').order_by('-last_login')
+
+        page = self.paginate_queryset(recent_users)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(recent_users, many=True)
+        return Response(serializer.data)

@@ -32,3 +32,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ['url', 'id', 'username', 'snippets']
+
+#https://gist.github.com/gengue/a914bc1540383bfa5e1374db3df10efd
+class PasswordSerializer(serializers.Serializer):
+    """
+    Serializer for password change endpoint.
+    """
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
