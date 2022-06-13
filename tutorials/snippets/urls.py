@@ -59,5 +59,9 @@ urlpatterns = [
         views.ExtraActionUserViewSet.as_view({'get': 'recent_users'}),
         name='recent_user',
     ),
+# render user list 'revisti for template .html so error
+    path('render_user_html/<int:pk>/',views.RendererUserDetail.as_view()),
+# http://127.0.0.1:8001/render_user_html/1/
+    path('download_xlsx/<int:pk>/',views.MyExampleViewSet.as_view({'get':'list'}))
     
 ]
