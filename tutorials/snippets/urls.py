@@ -13,6 +13,8 @@ router.register(r'test_user_viewset_router', views.TestUserViewSet, basename='us
 
 # router.register(r'test_requests', views.TestRequestViewSet, basename="test_requests")
 
+# this gives url like http://127.0.0.1:8001/testing_router/recent_users/ or http://127.0.0.1:8001/1/set_password/
+router.register(r'testing_router', views.ExtraActionUserViewSet, basename='user')
 
 urlpatterns = router.urls
 
