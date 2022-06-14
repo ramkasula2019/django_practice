@@ -309,3 +309,32 @@ class ExtraActionUserViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(recent_users, many=True)
         return Response(serializer.data)
+
+
+### renderer
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer,BrowsableAPIRenderer
+
+class RendererUserDetail(generics.RetrieveAPIView):
+    """
+    A view that returns a templated HTML representation of a given user.
+    """
+    queryset = User.objects.all()
+    renderer_classes = [TemplateHTMLRenderer]
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return Response({'user': self.object}, template_name='user_detail.html')
+
+
+from rest_framework.viewsets import ReadOnlyModelViewSet
+from drf_excel.mixins import XLSXFileMixin
+from drf_excel.renderers import XLSXRenderer
+
+
+from snippets.serializers import SnippetSerializer, UserSerializer, PasswordSerializer
+
+class MyExampleViewSet(XLSXFileMixin, ReadOnlyModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    renderer_classes = [XLSXRenderer]
+    filename = 'my_export.xlsx'
