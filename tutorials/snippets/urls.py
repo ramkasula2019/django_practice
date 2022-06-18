@@ -9,6 +9,7 @@ from snippets.serializers import SnippetSerializer, UserSerializer
 router = DefaultRouter()
 router.register(r'snippets', views.SnippetViewSet,basename="snippet")
 router.register(r'users', views.UserViewSet, basename="user")
+router.register(r'permissions_users', views.PermissionUserViewSet, basename="user")
 router.register(r'test_user_viewset_router', views.TestUserViewSet, basename='user')
 
 # router.register(r'test_requests', views.TestRequestViewSet, basename="test_requests")

@@ -338,3 +338,19 @@ class MyExampleViewSet(XLSXFileMixin, ReadOnlyModelViewSet):
     serializer_class = UserSerializer
     renderer_classes = [XLSXRenderer]
     filename = 'my_export.xlsx'
+
+
+
+
+#############for permission test bridge ###############333
+class PermissionUserViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list` and `retrieve` actions.
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get_required_permissions(self):
+        if self.action in ['list','retreive']:
+            return []
+        
