@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+CELERY_RESULT_BACKEND = 'django-db'
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'snippets'
+    'snippets',
+    'django_celery_results',
 ]
 
 REST_FRAMEWORK = {
@@ -76,6 +77,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'tutorials.wsgi.application'
 
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
